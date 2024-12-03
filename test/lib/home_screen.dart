@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/calculator.dart';
+import 'calculator.dart';
 import 'result_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -10,15 +10,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // Controladores de texto
   final TextEditingController _capital1Controller = TextEditingController();
   final TextEditingController _monthly1Controller = TextEditingController();
   final TextEditingController _rate1Controller = TextEditingController();
-
   final TextEditingController _capital2Controller = TextEditingController();
   final TextEditingController _monthly2Controller = TextEditingController();
   final TextEditingController _rate2Controller = TextEditingController();
-
   final TextEditingController _monthsController = TextEditingController();
 
   void _calculateInvestments() {
@@ -26,11 +23,9 @@ class _HomeScreenState extends State<HomeScreen> {
       final capital1 = double.parse(_capital1Controller.text);
       final monthly1 = double.parse(_monthly1Controller.text);
       final rate1 = double.parse(_rate1Controller.text) / 100;
-
       final capital2 = double.parse(_capital2Controller.text);
       final monthly2 = double.parse(_monthly2Controller.text);
       final rate2 = double.parse(_rate2Controller.text) / 100;
-
       final months = int.parse(_monthsController.text);
 
       final investment1 = calculateCompoundInterest(capital1, monthly1, rate1, months);
@@ -48,10 +43,67 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Widget _buildInvestmentSection({
+    required String title,
+    required TextEditingController capitalController,
+    required TextEditingController monthlyController,
+    required TextEditingController rateController,
+  }) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      elevation: 3,
+      margin: EdgeInsets.symmetric(vertical: 10),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Colors.blueAccent,
+              ),
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: capitalController,
+              decoration: InputDecoration(labelText: 'Capital Inicial (R\$)'),
+              keyboardType: TextInputType.number,
+              validator: (value) =>
+                  value!.isEmpty ? 'Informe o capital inicial' : null,
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: monthlyController,
+              decoration: InputDecoration(labelText: 'Aplicação Mensal (R\$)'),
+              keyboardType: TextInputType.number,
+              validator: (value) =>
+                  value!.isEmpty ? 'Informe a aplicação mensal' : null,
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: rateController,
+              decoration: InputDecoration(labelText: 'Taxa de Juros Mensal (%)'),
+              keyboardType: TextInputType.number,
+              validator: (value) =>
+                  value!.isEmpty ? 'Informe a taxa de juros' : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Simulador de Investimentos')),
+      appBar: AppBar(
+        title: Text('Simulador de Investimentos'),
+        backgroundColor: Colors.blueAccent,
+        centerTitle: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -60,69 +112,49 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  'Investimento 1',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                _buildInvestmentSection(
+                  title: 'Investimento 1',
+                  capitalController: _capital1Controller,
+                  monthlyController: _monthly1Controller,
+                  rateController: _rate1Controller,
                 ),
-                TextFormField(
-                  controller: _capital1Controller,
-                  decoration: InputDecoration(labelText: 'Capital Inicial (R\$)'),
-                  keyboardType: TextInputType.number,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Informe o capital inicial' : null,
+                Divider(),
+                _buildInvestmentSection(
+                  title: 'Investimento 2',
+                  capitalController: _capital2Controller,
+                  monthlyController: _monthly2Controller,
+                  rateController: _rate2Controller,
                 ),
-                TextFormField(
-                  controller: _monthly1Controller,
-                  decoration: InputDecoration(labelText: 'Aplicação Mensal (R\$)'),
-                  keyboardType: TextInputType.number,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Informe a aplicação mensal' : null,
-                ),
-                TextFormField(
-                  controller: _rate1Controller,
-                  decoration: InputDecoration(labelText: 'Taxa de Juros Mensal (%)'),
-                  keyboardType: TextInputType.number,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Informe a taxa de juros' : null,
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'Investimento 2',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                TextFormField(
-                  controller: _capital2Controller,
-                  decoration: InputDecoration(labelText: 'Capital Inicial (R\$)'),
-                  keyboardType: TextInputType.number,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Informe o capital inicial' : null,
-                ),
-                TextFormField(
-                  controller: _monthly2Controller,
-                  decoration: InputDecoration(labelText: 'Aplicação Mensal (R\$)'),
-                  keyboardType: TextInputType.number,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Informe a aplicação mensal' : null,
-                ),
-                TextFormField(
-                  controller: _rate2Controller,
-                  decoration: InputDecoration(labelText: 'Taxa de Juros Mensal (%)'),
-                  keyboardType: TextInputType.number,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Informe a taxa de juros' : null,
-                ),
-                SizedBox(height: 20),
-                TextFormField(
-                  controller: _monthsController,
-                  decoration: InputDecoration(labelText: 'Período (meses)'),
-                  keyboardType: TextInputType.number,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Informe o período' : null,
+                Divider(),
+                Card(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  elevation: 3,
+                  margin: EdgeInsets.symmetric(vertical: 10),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: TextFormField(
+                      controller: _monthsController,
+                      decoration: InputDecoration(labelText: 'Período (meses)'),
+                      keyboardType: TextInputType.number,
+                      validator: (value) =>
+                          value!.isEmpty ? 'Informe o período' : null,
+                    ),
+                  ),
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _calculateInvestments,
-                  child: Text('Calcular'),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    backgroundColor: Colors.blueAccent,
+                  ),
+                  child: Text(
+                    'Calcular',
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
               ],
             ),
